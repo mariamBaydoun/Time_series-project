@@ -1,0 +1,45 @@
+library(ggplot2)
+chew.data = read.csv("C:\\Users\\Mariam Baydoun\\Desktop\\assig3.2\\berry_sugar_chewy.csv")
+
+chew.lmod.2 = lm(chewiness~sugar, data=chew.data)
+summary(chew.lmod.2)
+anova(chew.lmod,chew.lmod.2)
+sim_data <- function(n=20, var=1, beta.0=1, beta.1=2.5){
+  # BEGIN SOLUTION HERE
+  x = seq(-1, 1, length.out = n); beta0 = 1; beta1 = 2.5; e = rnorm(n, 0, sqrt(var))
+  y = beta0 + beta1*x + e
+  # END SOLUTION HERE
+  data = data.frame(x=x, y=y)
+  return(data)
+}
+data = sim_data()
+lmod = lm(y~x, data=data)
+ggplot(aes(x=x, y=y), data=data) + 
+  geom_point() +
+  geom_smooth(method="lm", formula=y~x, se=FALSE, color="#CFB87C")
+
+
+
+gen_slopes <- function(num.slopes=50, var=2, num.samples=20){
+  g = ggplot()
+  # Repeat the sample for the number of slopes
+  for(ii in 1:num.slopes){
+    # Generate a random sampling of data
+    data = sim_data(n=num.samples, var=var)
+    # Add the slope of the best fit linear model to the plot
+    g = g + stat_smooth(aes(x=x, y=y), data=data, method="lm", geom="line", 
+                        se=FALSE, alpha=0.4, color="#CFB87C", size=1)
+  }
+  return(g)
+}
+
+
+# Call gen_slopes with different variances
+plot1 <- gen_slopes(num.slopes = 50, var = 1, num.samples = 20)
+plot2 <- gen_slopes(num.slopes = 50, var = 2, num.samples = 20)
+plot3 <- gen_slopes(num.slopes = 50, var = 0.5, num.samples = 20)
+
+# Display the plots
+print(plot1)
+plot2
+plot3
